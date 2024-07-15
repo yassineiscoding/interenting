@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "interenting"
+version = "1.0.0"
+description = "UZHISS Deep Dive into Blockchain Final Project"
+authors = [
+  "DroidZed <41507665+DroidZed@users.noreply.github.com>",
+  "yassineiscoding <112555529+yassineiscoding@users.noreply.github.com>",
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.111.1"
+hedera-sdk-py = "^2.31.0"
+python-decouple-typed = "^3.11.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.5.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
