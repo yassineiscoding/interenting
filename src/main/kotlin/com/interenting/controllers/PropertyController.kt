@@ -2,14 +2,15 @@ package com.interenting.controllers
 
 import com.interenting.models.EcoTier
 import com.interenting.models.Property
-import com.interenting.services.PropertyService
-import org.springframework.beans.factory.annotation.Autowired
+import com.interenting.services.property.IPropertyService
+import lombok.AllArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/properties")
-class PropertyController @Autowired constructor(private val propertyService: PropertyService) {
+@AllArgsConstructor
+class PropertyController(private val propertyService: IPropertyService) {
 
     @GetMapping
     fun listProperties(): ResponseEntity<List<Property>> {
@@ -33,7 +34,10 @@ class PropertyController @Autowired constructor(private val propertyService: Pro
     }
 
     @PutMapping("/{id}/ecoStatus")
-    fun updateEcoStatus(@PathVariable id: Long, @RequestParam ecoTier: EcoTier): ResponseEntity<String> {
+    fun updateEcoStatus(
+        @PathVariable id: Long,
+        @RequestParam ecoTier: EcoTier
+    ): ResponseEntity<String> {
         propertyService.updateEcoStatus(id, ecoTier)
         return ResponseEntity.ok("Eco status updated successfully")
     }

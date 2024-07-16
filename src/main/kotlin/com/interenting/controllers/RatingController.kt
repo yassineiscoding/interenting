@@ -1,14 +1,15 @@
 package com.interenting.controllers
 
 import com.interenting.models.Rating
-import com.interenting.services.RatingService
-import org.springframework.beans.factory.annotation.Autowired
+import com.interenting.services.rating.IRatingService
+import lombok.AllArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/ratings")
-class RatingController @Autowired constructor(private val ratingService: RatingService) {
+@AllArgsConstructor
+class RatingController(private val ratingService: IRatingService) {
 
     @PostMapping
     fun submitRating(@RequestBody rating: Rating): ResponseEntity<String> {

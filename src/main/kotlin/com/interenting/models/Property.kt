@@ -2,10 +2,12 @@ package com.interenting.models
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
+import lombok.EqualsAndHashCode
 
 
 @Entity
-data class Property(
+@EqualsAndHashCode
+class Property(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 

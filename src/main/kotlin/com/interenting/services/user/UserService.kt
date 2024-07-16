@@ -1,28 +1,29 @@
-package com.interenting.services
+package com.interenting.services.user
 
 import com.interenting.models.User
 import com.interenting.repositories.UserRepository
-import org.springframework.beans.factory.annotation.Autowired
+import lombok.AllArgsConstructor
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class UserService @Autowired constructor(private val userRepository: UserRepository) {
+@AllArgsConstructor
+class UserService(private val userRepository: UserRepository) : IUserService {
 
     private val passwordEncoder = BCryptPasswordEncoder()
 
-    fun registerUser(user: User) {
+    override fun registerUser(user: User) {
         user.password = passwordEncoder.encode(user.password)
         user.kycStatus = "PENDING"
         userRepository.save(user)
     }
 
-    fun loginUser(email: String, password: String): Boolean {
+    override fun loginUser(email: String, password: String): Boolean {
         val user = userRepository.findByEmail(email) ?: return false
         return passwordEncoder.matches(password, user.password)
     }
 
-    fun updateProfile(id: Long, updatedUser: User) {
+    override fun updateProfile(id: Long, updatedUser: User) {
         val user = userRepository.findById(id).orElse(null)
             ?: throw IllegalArgumentException("User not found")
         user.name = updatedUser.name
@@ -30,7 +31,7 @@ class UserService @Autowired constructor(private val userRepository: UserReposit
         userRepository.save(user)
     }
 
-    fun completeKYC(id: Long) {
+    override fun completeKYC(id: Long) {
         val user = userRepository.findById(id).orElse(null)
             ?: throw IllegalArgumentException("User not found")
         user.kycStatus = "APPROVED"

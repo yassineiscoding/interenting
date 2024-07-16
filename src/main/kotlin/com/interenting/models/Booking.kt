@@ -3,10 +3,12 @@ package com.interenting.models
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import lombok.EqualsAndHashCode
 import java.time.LocalDateTime
 
 @Entity
-data class Booking(
+@EqualsAndHashCode
+class Booking(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 

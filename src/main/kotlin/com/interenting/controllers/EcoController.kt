@@ -2,14 +2,16 @@ package com.interenting.controllers
 
 import com.interenting.models.EcoPractice
 import com.interenting.models.EcoToken
-import com.interenting.services.EcoService
-import org.springframework.beans.factory.annotation.Autowired
+import com.interenting.services.eco.IEcoService
+import lombok.AllArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+
 @RestController
 @RequestMapping("/eco")
-class EcoController @Autowired constructor(private val ecoService: EcoService) {
+@AllArgsConstructor
+class EcoController(private val ecoService: IEcoService) {
 
     @GetMapping("/status")
     fun getEcoStatus(@RequestParam propertyId: Long): ResponseEntity<List<EcoPractice>> {
@@ -23,7 +25,10 @@ class EcoController @Autowired constructor(private val ecoService: EcoService) {
     }
 
     @PostMapping("/redeem")
-    fun redeemEcoTokens(@RequestParam userId: Long, @RequestParam amount: Int): ResponseEntity<String> {
+    fun redeemEcoTokens(
+        @RequestParam userId: Long,
+        @RequestParam amount: Int
+    ): ResponseEntity<String> {
         ecoService.redeemEcoTokens(userId, amount)
         return ResponseEntity.ok("Eco tokens redeemed successfully")
     }

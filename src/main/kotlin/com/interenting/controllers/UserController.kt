@@ -1,14 +1,15 @@
 package com.interenting.controllers
 
 import com.interenting.models.User
-import com.interenting.services.UserService
-import org.springframework.beans.factory.annotation.Autowired
+import com.interenting.services.user.IUserService
+import lombok.AllArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/users")
-class UserController @Autowired constructor(private val userService: UserService) {
+@AllArgsConstructor
+class UserController(private val userService: IUserService) {
 
     @PostMapping("/register")
     fun registerUser(@RequestBody user: User): ResponseEntity<String> {
@@ -17,7 +18,10 @@ class UserController @Autowired constructor(private val userService: UserService
     }
 
     @PostMapping("/login")
-    fun loginUser(@RequestParam email: String, @RequestParam password: String): ResponseEntity<String> {
+    fun loginUser(
+        @RequestParam email: String,
+        @RequestParam password: String
+    ): ResponseEntity<String> {
         val result = userService.loginUser(email, password)
         return if (result) {
             ResponseEntity.ok("Login successful")
@@ -27,7 +31,10 @@ class UserController @Autowired constructor(private val userService: UserService
     }
 
     @PutMapping("/{id}/profile")
-    fun updateProfile(@PathVariable id: Long, @RequestBody user: User): ResponseEntity<String> {
+    fun updateProfile(
+        @PathVariable id: Long,
+        @RequestBody user: User
+    ): ResponseEntity<String> {
         userService.updateProfile(id, user)
         return ResponseEntity.ok("Profile updated successfully")
     }

@@ -1,24 +1,27 @@
-package com.interenting.services
+package com.interenting.services.booking
 
-import com.interenting.models.*
-import com.interenting.repositories.*
-import org.springframework.beans.factory.annotation.Autowired
+import com.interenting.models.Booking
+import com.interenting.models.BookingStatus
+import com.interenting.repositories.BookingRepository
+import com.interenting.services.hedera.ISmartContractService
+import lombok.AllArgsConstructor
 import org.springframework.stereotype.Service
 
 @Service
-class BookingService @Autowired constructor(
+@AllArgsConstructor
+class BookingService(
     private val bookingRepository: BookingRepository,
-    private val smartContractService: SmartContractService
-) {
+    private val smartContractService: ISmartContractService
+) : IBookingService {
 
-    fun createBooking(booking: Booking) {
+    override fun createBooking(booking: Booking) {
         booking.status = BookingStatus.PENDING
         val contractId = smartContractService.deployContract(booking)
         booking.smartContractId = contractId
         bookingRepository.save(booking)
     }
 
-    fun updateBookingStatus(id: Long, status: BookingStatus) {
+    override fun updateBookingStatus(id: Long, status: BookingStatus) {
         val booking = bookingRepository.findById(id).orElse(null)
             ?: throw IllegalArgumentException("Booking not found")
         booking.status = status
@@ -26,7 +29,7 @@ class BookingService @Autowired constructor(
         bookingRepository.save(booking)
     }
 
-    fun getBookingDetails(id: Long): Booking? {
+    override fun getBookingDetails(id: Long): Booking? {
         return bookingRepository.findById(id).orElse(null)
     }
 }

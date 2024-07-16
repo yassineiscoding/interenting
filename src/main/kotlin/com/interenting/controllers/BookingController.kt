@@ -1,16 +1,16 @@
 package com.interenting.controllers
 
-import com.interenting.models.BookingStatus
-
 import com.interenting.models.Booking
-import com.interenting.services.BookingService
-import org.springframework.beans.factory.annotation.Autowired
+import com.interenting.models.BookingStatus
+import com.interenting.services.booking.IBookingService
+import lombok.AllArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/bookings")
-class BookingController @Autowired constructor(private val bookingService: BookingService) {
+@AllArgsConstructor
+class BookingController(private val bookingService: IBookingService) {
 
     @PostMapping
     fun createBooking(@RequestBody booking: Booking): ResponseEntity<String> {
@@ -19,7 +19,10 @@ class BookingController @Autowired constructor(private val bookingService: Booki
     }
 
     @PutMapping("/{id}/status")
-    fun updateBookingStatus(@PathVariable id: Long, @RequestParam status: BookingStatus): ResponseEntity<String> {
+    fun updateBookingStatus(
+        @PathVariable id: Long,
+        @RequestParam status: BookingStatus
+    ): ResponseEntity<String> {
         bookingService.updateBookingStatus(id, status)
         return ResponseEntity.ok("Booking status updated successfully")
     }

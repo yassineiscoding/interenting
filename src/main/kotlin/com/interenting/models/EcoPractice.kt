@@ -1,9 +1,11 @@
 package com.interenting.models
 
 import jakarta.persistence.*
+import lombok.EqualsAndHashCode
 
 @Entity
-data class EcoPractice(
+@EqualsAndHashCode
+class EcoPractice(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 

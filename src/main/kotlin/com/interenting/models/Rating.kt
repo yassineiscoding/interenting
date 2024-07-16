@@ -4,11 +4,14 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import lombok.EqualsAndHashCode
 import java.time.LocalDateTime
+
 //import javax.validation.constraints.*
 
 @Entity
-data class Rating(
+@EqualsAndHashCode
+class Rating(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
