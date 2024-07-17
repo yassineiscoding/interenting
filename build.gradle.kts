@@ -4,6 +4,7 @@ plugins {
 	kotlin("plugin.jpa") version "1.9.24"
 	kotlin("jvm") version "1.9.24"
 	kotlin("plugin.spring") version "1.9.24"
+	kotlin("plugin.serialization") version "2.0.0"
 }
 
 group = "com.interenting"
@@ -50,6 +51,8 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 	implementation("org.springframework.boot:spring-boot-starter-logging")
+
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 }
 
 kotlin {
