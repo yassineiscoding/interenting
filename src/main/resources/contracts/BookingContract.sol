@@ -2,17 +2,9 @@
 
 pragma solidity ^0.8.18;
 
-contract BookingContract {
-    /*
-     * Booking representation in the contract
-     */
-    struct Booking {
-        uint256 id;
-        bytes32 hash;
-        bool isCheckedIn;
-        bool isCheckedOut;
-    }
+import "contracts/IBookingContract.sol";
 
+contract BookingContract is IBookingContract {
     // The list of saved bookings to manipulate them
     Booking[] private bookings;
 
@@ -65,6 +57,7 @@ contract BookingContract {
     // Save a booking to manage it
     function addBooking(uint256 id, string memory booking)
     public
+    override
     onlyAllowed
     returns (uint256)
     {
@@ -81,6 +74,7 @@ contract BookingContract {
     function getBookingByHash(string memory hash)
     public
     view
+    override
     onlyAllowed
     returns (Booking memory)
     {
@@ -99,6 +93,7 @@ contract BookingContract {
     // update the booking's hash to maintain integritiy
     function updateBooking(uint256 id, string memory newHash)
     public
+    override
     onlyAllowed
     {
         bookings[id].hash = keccak256(abi.encodePacked(newHash));
@@ -107,7 +102,7 @@ contract BookingContract {
     }
 
     // remove the booking
-    function cancelBooking(string memory id) public onlyAllowed {
+    function cancelBooking(string memory id) public override onlyAllowed {
         uint256 index = 0;
 
         for (; index < bookings.length; index++) {
@@ -126,6 +121,7 @@ contract BookingContract {
     // set the checkin status and emit the event
     function checkIn(uint256 bookingId)
     public
+    override
     onlyAllowed
     isNotBooked(bookingId)
     {
@@ -139,6 +135,7 @@ contract BookingContract {
     // set the checkout status and emit the event
     function checkOut(uint256 bookingId)
     public
+    override
     onlyAllowed
     isBookingCheckedIn(bookingId)
     {

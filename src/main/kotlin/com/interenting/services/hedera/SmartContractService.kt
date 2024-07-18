@@ -23,21 +23,42 @@ class SmartContractService : ISmartContractService {
 
         //Sign with the client operator private key to pay for the transaction and submit the query to a Hedera network
         val txResponse: TransactionResponse? =
-            transaction?.execute(HClient.client);
+            transaction?.execute(HClient.client)
 
         //Request the receipt of the transaction
         val receipt: TransactionReceipt? =
-            txResponse?.getReceipt(HClient.client);
+            txResponse?.getReceipt(HClient.client)
 
         //Get the transaction consensus status
-        val transactionStatus: Status? = receipt?.status;
+        val transactionStatus: Status? = receipt?.status
 
-        println("The transaction consensus status is $transactionStatus");
+        println("Saving the booking transaction consensus status is $transactionStatus")
 
     }
 
     override fun cancelBookingOnChain(owner: AccountId) {
-        TODO("Not yet implemented")
+        //Create the transaction
+        val transaction: ContractExecuteTransaction? =
+            ContractExecuteTransaction()
+                .setContractId(ContractId.fromString(bookingContractId))
+                .setGas(100_000_000)
+                .setFunction(
+                    "cancelBooking", ContractFunctionParameters()
+                        .addString("hello from hedera again!")
+                )
+
+        //Sign with the client operator private key to pay for the transaction and submit the query to a Hedera network
+        val txResponse: TransactionResponse? =
+            transaction?.execute(HClient.client)
+
+        //Request the receipt of the transaction
+        val receipt: TransactionReceipt? =
+            txResponse?.getReceipt(HClient.client)
+
+        //Get the transaction consensus status
+        val transactionStatus: Status? = receipt?.status
+
+        println("Saving the booking transaction consensus status is $transactionStatus")
     }
 
 }
