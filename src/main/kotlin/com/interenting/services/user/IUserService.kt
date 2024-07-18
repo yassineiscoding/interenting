@@ -6,9 +6,11 @@ interface IUserService {
 
     fun registerUser(user: User)
 
-    fun loginUser(email: String, password: String): Boolean
+    fun loginUser(email: String, password: String): Long
 
     fun updateProfile(id: Long, updatedUser: User)
 
     fun completeKYC(id: Long)
+
+    fun getUserById(id: Long): User?
 }

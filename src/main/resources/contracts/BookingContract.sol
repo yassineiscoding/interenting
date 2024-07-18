@@ -2,9 +2,17 @@
 
 pragma solidity ^0.8.18;
 
-import "contracts/IBookingContract.sol";
+contract BookingContract {
+    /*
+     * Booking representation in the contract
+     */
+    struct Booking {
+        uint256 id;
+        bytes32 hash;
+        bool isCheckedIn;
+        bool isCheckedOut;
+    }
 
-contract BookingContract is IBookingContract {
     // The list of saved bookings to manipulate them
     Booking[] private bookings;
 
@@ -20,15 +28,6 @@ contract BookingContract is IBookingContract {
 
     constructor() {
         bookingCreator = msg.sender;
-    }
-
-    // only the creator of the booking can execute the related functions
-    modifier onlyAllowed() {
-        require(
-            msg.sender == bookingCreator,
-            "Only allowed parties can execute this contract"
-        );
-        _;
     }
 
     // check if the booking is free
@@ -57,8 +56,6 @@ contract BookingContract is IBookingContract {
     // Save a booking to manage it
     function addBooking(uint256 id, string memory booking)
     public
-    override
-    onlyAllowed
     returns (uint256)
     {
         bookings.push(
@@ -74,8 +71,6 @@ contract BookingContract is IBookingContract {
     function getBookingByHash(string memory hash)
     public
     view
-    override
-    onlyAllowed
     returns (Booking memory)
     {
         uint256 index = 0;
@@ -90,19 +85,15 @@ contract BookingContract is IBookingContract {
         return bookings[index];
     }
 
-    // update the booking's hash to maintain integritiy
-    function updateBooking(uint256 id, string memory newHash)
-    public
-    override
-    onlyAllowed
-    {
+    // update the booking's hash to maintain integrity
+    function updateBooking(uint256 id, string memory newHash) public {
         bookings[id].hash = keccak256(abi.encodePacked(newHash));
 
         emit BookingUpdated();
     }
 
     // remove the booking
-    function cancelBooking(string memory id) public override onlyAllowed {
+    function cancelBooking(string memory id) public {
         uint256 index = 0;
 
         for (; index < bookings.length; index++) {
@@ -119,12 +110,7 @@ contract BookingContract is IBookingContract {
     }
 
     // set the checkin status and emit the event
-    function checkIn(uint256 bookingId)
-    public
-    override
-    onlyAllowed
-    isNotBooked(bookingId)
-    {
+    function checkIn(uint256 bookingId) public isNotBooked(bookingId) {
         require(!bookings[bookingId].isCheckedIn, "Already checked in");
 
         bookings[bookingId].isCheckedIn = true;
@@ -133,12 +119,7 @@ contract BookingContract is IBookingContract {
     }
 
     // set the checkout status and emit the event
-    function checkOut(uint256 bookingId)
-    public
-    override
-    onlyAllowed
-    isBookingCheckedIn(bookingId)
-    {
+    function checkOut(uint256 bookingId) public isBookingCheckedIn(bookingId) {
         require(bookings[bookingId].isCheckedIn, "Not checked in");
 
         require(!bookings[bookingId].isCheckedOut, "Already checked out");

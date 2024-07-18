@@ -1,8 +1,10 @@
 package com.interenting.controllers
 
 import com.interenting.models.User
+import com.interenting.payload.GenericResp
 import com.interenting.services.user.IUserService
 import lombok.AllArgsConstructor
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -12,21 +14,22 @@ import org.springframework.web.bind.annotation.*
 class UserController(private val userService: IUserService) {
 
     @PostMapping("/register")
-    fun registerUser(@RequestBody user: User): ResponseEntity<String> {
+    fun registerUser(@RequestBody user: User): ResponseEntity<GenericResp> {
         userService.registerUser(user)
-        return ResponseEntity.ok("User registered successfully")
+        return ResponseEntity.ok(GenericResp(message = "User registered successfully"))
     }
 
     @PostMapping("/login")
     fun loginUser(
         @RequestParam email: String,
         @RequestParam password: String
-    ): ResponseEntity<String> {
-        val result = userService.loginUser(email, password)
-        return if (result) {
-            ResponseEntity.ok("Login successful")
+    ): ResponseEntity<GenericResp> {
+        val loginUser = userService.loginUser(email, password)
+        return if (loginUser != -1L) {
+            ResponseEntity.ok(GenericResp(message = "Login successful, id = $loginUser"))
         } else {
-            ResponseEntity.status(401).body("Invalid credentials")
+            ResponseEntity.status(401)
+                .body(GenericResp(error = "Invalid credentials"))
         }
     }
 
@@ -34,14 +37,25 @@ class UserController(private val userService: IUserService) {
     fun updateProfile(
         @PathVariable id: Long,
         @RequestBody user: User
-    ): ResponseEntity<String> {
+    ): ResponseEntity<GenericResp> {
         userService.updateProfile(id, user)
-        return ResponseEntity.ok("Profile updated successfully")
+        return ResponseEntity.ok(GenericResp(message = "Profile updated successfully"))
     }
 
     @PostMapping("/{id}/kyc")
-    fun completeKYC(@PathVariable id: Long): ResponseEntity<String> {
+    fun completeKYC(@PathVariable id: Long): ResponseEntity<GenericResp> {
         userService.completeKYC(id)
-        return ResponseEntity.ok("KYC completed successfully")
+        return ResponseEntity.ok(GenericResp(message = "KYC completed successfully"))
+    }
+
+    @GetMapping("/{id}")
+    fun getUser(@PathVariable id: Long): ResponseEntity<Any> {
+        val user = userService.getUserById(id)
+
+        return if (user == null) ResponseEntity(
+            GenericResp(error = "Not found!"),
+            HttpStatus.NOT_FOUND
+        )
+        else ResponseEntity.ok(user)
     }
 }

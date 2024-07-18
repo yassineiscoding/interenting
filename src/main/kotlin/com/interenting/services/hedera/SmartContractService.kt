@@ -10,55 +10,149 @@ class SmartContractService : ISmartContractService {
     @Value("\${app.bookingContractId}")
     lateinit var bookingContractId: String
 
-    override fun saveBookingOnChain(stringObj: String, owner: AccountId) {
-        //Create the transaction
-        val transaction: ContractExecuteTransaction? =
-            ContractExecuteTransaction()
+    @Value("\${app.accountId}")
+    lateinit var operatorID: String
+
+    @Value("\${app.adminPrivateKey}")
+    lateinit var operatorKey: String
+
+    override fun saveBookingOnChain(
+        id: Long,
+        stringObj: String,
+        owner: AccountId
+    ): String {
+
+        val operatorId = AccountId.fromString(operatorID)
+
+        val operatorKey = PrivateKey.fromString(operatorKey)
+
+        val client: Client = Client.forTestnet().setOperator(
+            operatorId,
+            operatorKey
+        )
+
+        val query =
+            ContractCallQuery()
                 .setContractId(ContractId.fromString(bookingContractId))
                 .setGas(100_000_000)
                 .setFunction(
                     "addBooking", ContractFunctionParameters()
-                        .addString("hello from hedera again!")
+                        .addUint256(id.toBigInteger())
+                        .addString(stringObj)
                 )
 
-        //Sign with the client operator private key to pay for the transaction and submit the query to a Hedera network
-        val txResponse: TransactionResponse? =
-            transaction?.execute(HClient.client)
+        val result =
+            query?.execute(client)
 
-        //Request the receipt of the transaction
-        val receipt: TransactionReceipt? =
-            txResponse?.getReceipt(HClient.client)
-
-        //Get the transaction consensus status
-        val transactionStatus: Status? = receipt?.status
-
-        println("Saving the booking transaction consensus status is $transactionStatus")
-
+        return result?.getUint256(0).toString()
     }
 
-    override fun cancelBookingOnChain(owner: AccountId) {
-        //Create the transaction
+    override fun cancelBookingOnChain(stringObj: String, owner: AccountId) {
+
+        val operatorId = AccountId.fromString(operatorID)
+
+        val operatorKey = PrivateKey.fromString(operatorKey)
+
+        val client: Client = Client.forTestnet().setOperator(
+            operatorId,
+            operatorKey
+        )
+
         val transaction: ContractExecuteTransaction? =
             ContractExecuteTransaction()
                 .setContractId(ContractId.fromString(bookingContractId))
                 .setGas(100_000_000)
                 .setFunction(
                     "cancelBooking", ContractFunctionParameters()
-                        .addString("hello from hedera again!")
+                        .addString(stringObj)
                 )
+                .sign(operatorKey)
 
-        //Sign with the client operator private key to pay for the transaction and submit the query to a Hedera network
         val txResponse: TransactionResponse? =
-            transaction?.execute(HClient.client)
+            transaction?.execute(client)
 
-        //Request the receipt of the transaction
         val receipt: TransactionReceipt? =
-            txResponse?.getReceipt(HClient.client)
+            txResponse?.getReceipt(client)
 
-        //Get the transaction consensus status
         val transactionStatus: Status? = receipt?.status
 
         println("Saving the booking transaction consensus status is $transactionStatus")
+    }
+
+    override fun checkInBooking(id: Long, owner: AccountId) {
+        val operatorId = AccountId.fromString(operatorID)
+
+        val operatorKey = PrivateKey.fromString(operatorKey)
+
+        val client: Client = Client.forTestnet().setOperator(
+            operatorId,
+            operatorKey
+        )
+
+        val transaction = ContractExecuteTransaction()
+            .setContractId(ContractId.fromString(bookingContractId))
+            .setGas(100_000_000)
+            .setFunction(
+                "checkIn", ContractFunctionParameters()
+                    .addUint256(id.toBigInteger())
+            )
+
+        val txResponse = transaction.execute(client)
+
+        val receipt = txResponse.getReceipt(client)
+
+        println("Checkin receipt: $receipt")
+    }
+
+    override fun checkOutBooking(id: Long, owner: AccountId) {
+        val operatorId = AccountId.fromString(operatorID)
+
+        val operatorKey = PrivateKey.fromString(operatorKey)
+
+        val client: Client = Client.forTestnet().setOperator(
+            operatorId,
+            operatorKey
+        )
+
+        val transaction = ContractExecuteTransaction()
+            .setContractId(ContractId.fromString(bookingContractId))
+            .setGas(100_000_000)
+            .setFunction(
+                "checkOut", ContractFunctionParameters()
+                    .addUint256(id.toBigInteger())
+            )
+
+        val txResponse = transaction.execute(client)
+
+        val receipt = txResponse.getReceipt(client)
+
+        println("Checkout receipt: $receipt")
+    }
+
+    override fun updateBooking(newHash: String, owner: AccountId, index: Long) {
+        val operatorId = AccountId.fromString(operatorID)
+
+        val operatorKey = PrivateKey.fromString(operatorKey)
+
+        val client: Client = Client.forTestnet().setOperator(
+            operatorId,
+            operatorKey
+        )
+
+        val transaction = ContractExecuteTransaction()
+            .setContractId(ContractId.fromString(bookingContractId))
+            .setGas(100_000_000)
+            .setFunction(
+                "updateBooking", ContractFunctionParameters()
+                    .addUint256(index.toBigInteger())
+                    .addString(newHash)
+            )
+
+        val txResponse = transaction.execute(client)
+
+        val receipt = txResponse.getReceipt(client)
+
+        println("Update receipt: $receipt")
     }
 
 }
