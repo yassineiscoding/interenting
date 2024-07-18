@@ -2,10 +2,17 @@ package com.interenting.services.hedera
 
 import com.hedera.hashgraph.sdk.AccountId
 import com.hedera.hashgraph.sdk.TokenId
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
 class TokenService : ITokenService {
+
+    @Value("\${app.accountId}")
+    lateinit var operatorID: String
+
+    @Value("\${app.adminPrivateKey}")
+    lateinit var operatorKey: String
 
     override fun createToken(tokenName: String, totalSupply: Int): TokenId {
         // Hedera token creation logic

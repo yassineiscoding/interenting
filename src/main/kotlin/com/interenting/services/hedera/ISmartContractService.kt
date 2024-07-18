@@ -1,11 +1,11 @@
 package com.interenting.services.hedera
 
-import com.interenting.models.Booking
-import com.interenting.models.BookingStatus
+import com.hedera.hashgraph.sdk.AccountId
 
 interface ISmartContractService {
 
-    fun deployContract(booking: Booking): String
+    fun saveBookingOnChain(stringObj: String, owner: AccountId)
+    fun cancelBookingOnChain(owner: AccountId)
 
-    fun executeContract(contractId: String, status: BookingStatus)
+
 }

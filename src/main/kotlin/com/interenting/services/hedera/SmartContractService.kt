@@ -1,29 +1,43 @@
 package com.interenting.services.hedera
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.interenting.models.Booking
-import com.interenting.models.BookingStatus
+import com.hedera.hashgraph.sdk.*
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 
 @Service
 class SmartContractService : ISmartContractService {
 
-    @Value("classpath:contracts/dist/BookingContract.json")
-    lateinit var resourceFile: Resource
+    @Value("\${app.bookingContractId}")
+    lateinit var bookingContractId: String
 
-    override fun deployContract(booking: Booking): String {
-        val mapper = jacksonObjectMapper()
-        // Deploy smart contract logic
-        // Replace with your actual smart contract deployment code
+    override fun saveBookingOnChain(stringObj: String, owner: AccountId) {
+        //Create the transaction
+        val transaction: ContractExecuteTransaction? =
+            ContractExecuteTransaction()
+                .setContractId(ContractId.fromString(bookingContractId))
+                .setGas(100_000_000)
+                .setFunction(
+                    "addBooking", ContractFunctionParameters()
+                        .addString("hello from hedera again!")
+                )
 
-        // val abi = mapper.readValue(resourceFile)
+        //Sign with the client operator private key to pay for the transaction and submit the query to a Hedera network
+        val txResponse: TransactionResponse? =
+            transaction?.execute(HClient.client);
 
-        return "sampleContractId"
+        //Request the receipt of the transaction
+        val receipt: TransactionReceipt? =
+            txResponse?.getReceipt(HClient.client);
+
+        //Get the transaction consensus status
+        val transactionStatus: Status? = receipt?.status;
+
+        println("The transaction consensus status is $transactionStatus");
+
     }
 
-    override fun executeContract(contractId: String, status: BookingStatus) {
-        // Execute smart contract logic
+    override fun cancelBookingOnChain(owner: AccountId) {
+        TODO("Not yet implemented")
     }
+
 }
